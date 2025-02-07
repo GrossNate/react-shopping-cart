@@ -91,7 +91,7 @@ const App = () => {
         <Cart cart={cart} onCheckout={handleCheckout} />
       </header>
       <main>
-        <Products products={products} setProducts={setProducts} onAddItem={handleAddItem} onEditItem={handleEditItem} onDeleteProduct={handleDeleteProduct} />
+        <Products products={products} onAddItem={handleAddItem} onEditItem={handleEditItem} onDeleteProduct={handleDeleteProduct} />
         <p>
           <button className="add-product-button" onClick={toggleAddProductDialog}>Add A Product</button>
         </p>

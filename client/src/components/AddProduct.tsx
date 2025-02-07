@@ -8,7 +8,7 @@ interface AddProductProps {
 }
 
 const AddProduct = ({ show, closeModal, onAddProduct }: AddProductProps) => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDialogElement>(null);
   const [addProductDetails, setAddProductDetails] =
     useState<Omit<CatalogItem, "_id">>({ title: "", quantity: 0, price: 0 });
 
@@ -25,9 +25,9 @@ const AddProduct = ({ show, closeModal, onAddProduct }: AddProductProps) => {
 
   useEffect(() => {
     if (show) {
-      ref.current?.showModal();
+      if (ref.current) ref.current.showModal();
     } else {
-      ref.current?.close();
+      if (ref.current) ref.current.close();
     }
   }, [show]);
 

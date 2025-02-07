@@ -3,15 +3,14 @@ import { CatalogItem } from "../../types";
 
 interface ProductsProps {
   products: CatalogItem[];
-  setProducts: React.Dispatch<React.SetStateAction<CatalogItem[]>>;
   onAddItem: (productId: Pick<CatalogItem, "_id">) => Promise<void>;
   onEditItem: (product: CatalogItem) => Promise<void>;
   onDeleteProduct: (productId: Pick<CatalogItem, "_id">) => Promise<void>;
 }
 
-interface ProductsRowProps extends CatalogItem, Pick<ProductsProps, "setProducts" | "onAddItem" | "onEditItem" | "onDeleteProduct"> { }
+interface ProductsRowProps extends CatalogItem, Pick<ProductsProps, "onAddItem" | "onEditItem" | "onDeleteProduct"> { }
 
-const ProductsRow = ({ _id, title, price, quantity, setProducts, onAddItem, onEditItem, onDeleteProduct }: ProductsRowProps) => {
+export const ProductsRow = ({ _id, title, price, quantity, onAddItem, onEditItem, onDeleteProduct }: ProductsRowProps) => {
   const [showEditProduct, setShowEditProduct] = useState(false);
   const toggleShowEditProduct = () => setShowEditProduct(prev => !prev);
   const handleAddItem = () => {
@@ -34,19 +33,19 @@ const ProductsRow = ({ _id, title, price, quantity, setProducts, onAddItem, onEd
       </div>
       {
         showEditProduct ?
-          <EditProduct _id={_id} title={title} quantity={quantity} price={price} setShowEditProduct={setShowEditProduct} setProducts={setProducts} onEditItem={onEditItem} /> :
+          <EditProduct _id={_id} title={title} quantity={quantity} price={price} setShowEditProduct={setShowEditProduct} onEditItem={onEditItem} /> :
           null
       }
     </li>
   );
 };
 
-const Products = ({ products, setProducts, onAddItem, onEditItem, onDeleteProduct }: ProductsProps) => {
+const Products = ({ products, onAddItem, onEditItem, onDeleteProduct }: ProductsProps) => {
   return (
     <div className="product-listing">
       <h2>Products</h2>
       <ul className="product-list">
-        {products.map(({ _id, title, price, quantity }) => <ProductsRow key={_id} _id={_id} title={title} price={price} quantity={quantity} setProducts={setProducts} onAddItem={onAddItem} onEditItem={onEditItem} onDeleteProduct={onDeleteProduct} />)}
+        {products.map(({ _id, title, price, quantity }) => <ProductsRow key={_id} _id={_id} title={title} price={price} quantity={quantity} onAddItem={onAddItem} onEditItem={onEditItem} onDeleteProduct={onDeleteProduct} />)}
       </ul>
     </div>
 
@@ -58,7 +57,7 @@ interface EditProductProps extends Omit<ProductsRowProps, "onAddItem" | "onDelet
   setShowEditProduct: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditProduct = ({ _id, title, quantity, price, setShowEditProduct, setProducts, onEditItem }: EditProductProps) => {
+export const EditProduct = ({ _id, title, quantity, price, setShowEditProduct, onEditItem }: EditProductProps) => {
   const [productDetails, setProductDetails] =
     useState<CatalogItem>({ _id, title, quantity, price });
 
@@ -75,7 +74,7 @@ const EditProduct = ({ _id, title, quantity, price, setShowEditProduct, setProdu
   return (
     <div className="edit-form">
       <h3>Edit Product</h3>
-      <form>
+      <form role="form">
         <div className="input-group">
           <label htmlFor="product-name">Product Name</label>
           <input
