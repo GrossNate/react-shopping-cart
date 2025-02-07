@@ -1,9 +1,17 @@
-import { useEffect, useState } from "react";
-import { CartItem, CatalogItem, NewItem } from "../types";
-import Cart from "./components/Cart";
-import AddProduct from "./components/AddProduct";
-import Products from "./components/Products";
-import { addItem, addProduct, checkout, deleteProduct, editProduct, getCart, getProducts } from "./services/product";
+import { useEffect, useState } from 'react';
+import { CartItem, CatalogItem, NewItem } from '../types';
+import Cart from './components/Cart';
+import AddProduct from './components/AddProduct';
+import Products from './components/Products';
+import {
+  addItem,
+  addProduct,
+  checkout,
+  deleteProduct,
+  editProduct,
+  getCart,
+  getProducts,
+} from './services/product';
 
 const App = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -14,19 +22,25 @@ const App = () => {
 
   const refreshCart = (item: CartItem) => {
     if (cart.some(({ _id }) => _id === item._id)) {
-      setCart(cart => cart.map(cartItem => cartItem._id === item._id ? item : cartItem));
+      setCart((cart) =>
+        cart.map((cartItem) => (cartItem._id === item._id ? item : cartItem))
+      );
     } else {
-      setCart(cart => cart.concat(item));
+      setCart((cart) => cart.concat(item));
     }
   };
 
   const refreshProducts = (product: CatalogItem) => {
     if (products.some(({ _id }) => _id === product._id)) {
-      setProducts(products => products.map(catalogItem => catalogItem._id === product._id ? product : catalogItem));
+      setProducts((products) =>
+        products.map((catalogItem) =>
+          catalogItem._id === product._id ? product : catalogItem
+        )
+      );
     } else {
-      setProducts(products => products.concat(product));
+      setProducts((products) => products.concat(product));
     }
-  }
+  };
 
   const handleAddProduct = async (newCatalogItem: NewItem) => {
     const addedItem = await addProduct(newCatalogItem);
@@ -36,12 +50,14 @@ const App = () => {
     }
   };
 
-  const handleDeleteProduct = async (productId: Pick<CatalogItem, "_id">) => {
+  const handleDeleteProduct = async (productId: Pick<CatalogItem, '_id'>) => {
     const deleted = await deleteProduct(productId);
     if (deleted) {
-      setProducts(products => products.filter(product => product._id !== productId._id));
+      setProducts((products) =>
+        products.filter((product) => product._id !== productId._id)
+      );
     }
-  }
+  };
 
   const handleCheckout = async () => {
     const checkedOut = await checkout();
@@ -50,25 +66,25 @@ const App = () => {
     }
   };
 
-  const handleAddItem = async (productId: Pick<CatalogItem, "_id">) => {
+  const handleAddItem = async (productId: Pick<CatalogItem, '_id'>) => {
     const addedItemRemovedProduct = await addItem(productId);
     if (addedItemRemovedProduct) {
       const { item, product } = addedItemRemovedProduct;
       refreshCart(item);
       refreshProducts(product);
     }
-  }
+  };
 
   const handleEditItem = async (product: CatalogItem) => {
     const editedProduct = await editProduct(product);
     if (editedProduct) {
       refreshProducts(editedProduct);
     }
-  }
+  };
 
   const toggleAddProductDialog = () => {
-    setShowAddProductDialog(prev => !prev);
-  }
+    setShowAddProductDialog((prev) => !prev);
+  };
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -91,15 +107,28 @@ const App = () => {
         <Cart cart={cart} onCheckout={handleCheckout} />
       </header>
       <main>
-        <Products products={products} onAddItem={handleAddItem} onEditItem={handleEditItem} onDeleteProduct={handleDeleteProduct} />
+        <Products
+          products={products}
+          onAddItem={handleAddItem}
+          onEditItem={handleEditItem}
+          onDeleteProduct={handleDeleteProduct}
+        />
         <p>
-          <button className="add-product-button" onClick={toggleAddProductDialog}>Add A Product</button>
+          <button
+            className="add-product-button"
+            onClick={toggleAddProductDialog}
+          >
+            Add A Product
+          </button>
         </p>
-        <AddProduct show={showAddProductDialog} closeModal={toggleAddProductDialog} onAddProduct={handleAddProduct} />
+        <AddProduct
+          show={showAddProductDialog}
+          closeModal={toggleAddProductDialog}
+          onAddProduct={handleAddProduct}
+        />
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default App
-
+export default App;

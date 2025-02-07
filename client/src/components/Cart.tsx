@@ -1,8 +1,8 @@
-import { CartItem } from "../../types";
+import { CartItem } from '../../types';
 
 interface CartProps {
-  cart: CartItem[],
-  onCheckout: () => void
+  cart: CartItem[];
+  onCheckout: () => void;
 }
 
 const CartRow = ({ title, quantity, price }: CartItem) => {
@@ -12,12 +12,10 @@ const CartRow = ({ title, quantity, price }: CartItem) => {
       <td>{quantity}</td>
       <td>${price}</td>
     </tr>
-
   );
 };
 
 const Cart = ({ cart, onCheckout }: CartProps) => {
-
   const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
   return (
@@ -32,19 +30,30 @@ const Cart = ({ cart, onCheckout }: CartProps) => {
           </tr>
         </thead>
         <tbody>
-          {cart.map(({ _id, title, quantity, price }) => <CartRow key={_id} _id={_id} title={title} quantity={quantity} price={price} />)}
+          {cart.map(({ _id, title, quantity, price }) => (
+            <CartRow
+              key={_id}
+              _id={_id}
+              title={title}
+              quantity={quantity}
+              price={price}
+            />
+          ))}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={3} className="total">Total: ${total}</td>
+            <td colSpan={3} className="total">
+              Total: ${total}
+            </td>
           </tr>
         </tfoot>
       </table>
       <div className="checkout-button">
-        <button className="checkout" onClick={onCheckout}>Checkout</button>
+        <button className="checkout" onClick={onCheckout}>
+          Checkout
+        </button>
       </div>
     </div>
-
   );
 };
 
