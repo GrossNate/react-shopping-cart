@@ -13,7 +13,7 @@ import {
   getProducts,
 } from './services/product';
 
-const App = () => {
+export const App = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const [products, setProducts] = useState<CatalogItem[]>([]);
