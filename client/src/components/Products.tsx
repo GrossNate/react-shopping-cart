@@ -1,11 +1,20 @@
-import { ReactEventHandler, useState } from 'react';
-import { CatalogItem } from '../../types';
+import { ReactEventHandler, useEffect, useState } from 'react';
+import {
+  CatalogItem,
+  CatalogSortColumn,
+  catalogSortColumnSchema,
+  CatalogSortOrder,
+  catalogSortOrderSchema,
+  SortState,
+} from '../../types';
 
 interface ProductsProps {
   products: CatalogItem[];
   onAddItem: (productId: Pick<CatalogItem, '_id'>) => Promise<void>;
   onEditItem: (product: CatalogItem) => Promise<void>;
   onDeleteProduct: (productId: Pick<CatalogItem, '_id'>) => Promise<void>;
+  onSortProducts: (newSortState: SortState) => void;
+  sortState: SortState;
 }
 
 interface ProductsRowProps
@@ -70,10 +79,52 @@ const Products = ({
   onAddItem,
   onEditItem,
   onDeleteProduct,
+  onSortProducts,
+  sortState,
 }: ProductsProps) => {
+  const [sortColumn, setSortColumn] = useState<string>(sortState.sortColumn);
+  const [sortOrder, setSortOrder] = useState<string>(sortState.sortOrder);
+
+  const handleChangeSortColumn: ReactEventHandler<HTMLSelectElement> = (e) => {
+    setSortColumn(e.currentTarget.value);
+  };
+
+  const handleChangeSortOrder: ReactEventHandler<HTMLSelectElement> = (e) => {
+    setSortOrder(e.currentTarget.value);
+  };
+  useEffect(() => {
+    const parsedSortColumn = catalogSortColumnSchema.parse(sortColumn);
+    const parsedSortOrder = catalogSortOrderSchema.parse(sortOrder);
+    onSortProducts({
+      sortColumn: parsedSortColumn,
+      sortOrder: parsedSortOrder,
+    });
+
+  }, [sortColumn, sortOrder]);
+
+
   return (
     <div className="product-listing">
       <h2>Products</h2>
+      <div>
+        <select
+          id="sortColumnSelector"
+          onChange={handleChangeSortColumn}
+          value={sortColumn}
+        >
+          <option value={CatalogSortColumn.Title}>Title</option>
+          <option value={CatalogSortColumn.Price}>Price</option>
+          <option value={CatalogSortColumn.Quantity}>Quantity</option>
+        </select>
+        <select
+          id="sortOrderSelector"
+          onChange={handleChangeSortOrder}
+          value={sortOrder}
+        >
+          <option value={CatalogSortOrder.Asc}>Ascending</option>
+          <option value={CatalogSortOrder.Desc}>Descending</option>
+        </select>
+      </div>
       <ul className="product-list">
         {products.map(({ _id, title, price, quantity }) => (
           <ProductsRow

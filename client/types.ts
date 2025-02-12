@@ -30,3 +30,28 @@ export const newItemSchema = catalogItemSchema.omit({
 });
 
 export type NewItem = z.infer<typeof newItemSchema>;
+
+export enum CatalogSortColumn {
+  Title = 'title',
+  Price = 'price',
+  Quantity = 'quantity'
+}
+
+export const catalogSortColumnSchema = z.nativeEnum(CatalogSortColumn);
+
+export enum CatalogSortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export const catalogSortOrderSchema = z.nativeEnum(CatalogSortOrder);
+
+type CatalogArray = CatalogItem[];
+
+export interface SortState {
+    sortColumn: CatalogSortColumn;
+    sortOrder: CatalogSortOrder;
+}
+export interface Catalog extends CatalogArray {
+  sortState?: SortState;
+}

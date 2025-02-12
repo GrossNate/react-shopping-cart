@@ -1,5 +1,11 @@
-import { useEffect, useState } from 'react';
-import { CartItem, CatalogItem, NewItem } from '../types';
+import { useEffect, useReducer, useState } from 'react';
+import {
+  CatalogItem,
+  CatalogSortColumn,
+  CatalogSortOrder,
+  NewItem,
+  SortState,
+} from '../types';
 import Cart from './components/Cart';
 import AddProduct from './components/AddProduct';
 import Products from './components/Products';
@@ -12,57 +18,34 @@ import {
   getCart,
   getProducts,
 } from './services/product';
+import cartReducer, { CartAction } from './reducers/cartReducer';
+import catalogReducer, { CatalogAction } from './reducers/catalogReducer';
 
 export const App = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, dispatchCart] = useReducer(cartReducer, []);
 
-  const [products, setProducts] = useState<CatalogItem[]>([]);
+  const [catalog, dispatchCatalog] = useReducer(catalogReducer, []);
 
   const [showAddProductDialog, setShowAddProductDialog] = useState(false);
-
-  const refreshCart = (item: CartItem) => {
-    if (cart.some(({ _id }) => _id === item._id)) {
-      setCart((cart) =>
-        cart.map((cartItem) => (cartItem._id === item._id ? item : cartItem))
-      );
-    } else {
-      setCart((cart) => cart.concat(item));
-    }
-  };
-
-  const refreshProducts = (product: CatalogItem) => {
-    if (products.some(({ _id }) => _id === product._id)) {
-      setProducts((products) =>
-        products.map((catalogItem) =>
-          catalogItem._id === product._id ? product : catalogItem
-        )
-      );
-    } else {
-      setProducts((products) => products.concat(product));
-    }
-  };
 
   const handleAddProduct = async (newCatalogItem: NewItem) => {
     const addedItem = await addProduct(newCatalogItem);
     if (addedItem) {
-      // setProducts(products => [...products].concat(addedItem));
-      refreshProducts(addedItem);
+      dispatchCatalog(CatalogAction.CatalogAddProduct(addedItem));
     }
   };
 
   const handleDeleteProduct = async (productId: Pick<CatalogItem, '_id'>) => {
     const deleted = await deleteProduct(productId);
     if (deleted) {
-      setProducts((products) =>
-        products.filter((product) => product._id !== productId._id)
-      );
+      dispatchCatalog(CatalogAction.CatalogDeleteProduct(productId));
     }
   };
 
   const handleCheckout = async () => {
     const checkedOut = await checkout();
     if (checkedOut) {
-      setCart([]);
+      dispatchCart(CartAction.CartCheckout());
     }
   };
 
@@ -70,16 +53,21 @@ export const App = () => {
     const addedItemRemovedProduct = await addItem(productId);
     if (addedItemRemovedProduct) {
       const { item, product } = addedItemRemovedProduct;
-      refreshCart(item);
-      refreshProducts(product);
+      dispatchCart(CartAction.CartAddItem(item));
+      dispatchCatalog(CatalogAction.CatalogEditProduct(product));
     }
   };
 
-  const handleEditItem = async (product: CatalogItem) => {
+  const handleEditProduct = async (product: CatalogItem) => {
     const editedProduct = await editProduct(product);
     if (editedProduct) {
-      refreshProducts(editedProduct);
+      dispatchCatalog(CatalogAction.CatalogEditProduct(product));
     }
+  };
+
+  const handleSortProducts = async (newSortState: SortState) => {
+    console.log('handleSortProducts called', newSortState);
+    dispatchCatalog(CatalogAction.CatalogSort(newSortState));
   };
 
   const toggleAddProductDialog = () => {
@@ -87,14 +75,15 @@ export const App = () => {
   };
 
   useEffect(() => {
+    console.log("useEffect ran");
     const asyncWrapper = async () => {
       const products = await getProducts();
       if (products) {
-        setProducts(products);
+        dispatchCatalog(CatalogAction.CatalogRefresh(products));
       }
       const cart = await getCart();
       if (cart) {
-        setCart(cart);
+        dispatchCart(CartAction.CartRefresh(cart));
       }
     };
     asyncWrapper();
@@ -108,10 +97,17 @@ export const App = () => {
       </header>
       <main>
         <Products
-          products={products}
+          products={catalog}
           onAddItem={handleAddItem}
-          onEditItem={handleEditItem}
+          onEditItem={handleEditProduct}
           onDeleteProduct={handleDeleteProduct}
+          onSortProducts={handleSortProducts}
+          sortState={
+            catalog.sortState ?? {
+              sortColumn: CatalogSortColumn.Title,
+              sortOrder: CatalogSortOrder.Asc,
+            }
+          }
         />
         <p>
           <button
