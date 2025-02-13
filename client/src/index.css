@@ -105,9 +105,15 @@ button {
   display: inline-block;
 }
 
-.checkout {
+header button {
   background: #fff;
   color: #07575b;
+  float: left;
+  margin-left: 20px;
+  margin-top: 5px;
+}
+
+.checkout {
   margin-top: 20px;
   float: right;
 }
@@ -199,4 +205,62 @@ th {
 table td.total {
   text-align: right;
   padding-top: 20px;
+}
+
+/* ------- Dark Mode below --------- */
+body:has([class="darkMode"]) {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+.darkMode header {
+  background: #1e2a25;
+  color: #fff;
+}
+.darkMode main {
+  background: #333;
+}
+.darkMode .product {
+  background: #2c2c2c;
+}
+.darkMode .product .price {
+  color: #f2a5a5;
+}
+
+.darkMode .product .quantity.none-left {
+  color: #ff0000;
+}
+
+.darkMode .product .edit-form,
+.darkMode .add-form {
+  border-top: 1px solid #555;
+}
+.darkMode button {
+  background: #1e2a25;
+  color: #fff;
+}
+
+.darkMode .checkout, .darkMode header button {
+  background: #2c2c2c;
+  color: #e0e0e0;
+}
+
+.darkMode button:disabled {
+  background: #555;
+  color: #fff;
+}
+.darkMode .product .delete-button {
+  background: #e74c3c;
+  color: #fff;
+}
+.darkMode input[type="text"],
+.darkMode input[type="number"] {
+  background: #444;
+  color: #fff;
+  border: 1px solid #666;
+}
+
+.darkMode input[type="text"]:focus,
+.darkMode input[type="number"]:focus {
+  outline: none;
+  border-color: #1e2a25;
 }

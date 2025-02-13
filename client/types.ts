@@ -55,3 +55,17 @@ export interface SortState {
 export interface Catalog extends CatalogArray {
   sortState?: SortState;
 }
+
+export enum ThemeOption {
+  Light = 'light',
+  Dark = 'dark'
+}
+
+export interface Currencies {
+  [currencyCode: string]: number;
+}
+
+export interface Currency {
+  currency: string;
+  rate: number;
+}

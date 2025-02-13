@@ -1,10 +1,11 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import {
   CatalogItem,
   CatalogSortColumn,
   CatalogSortOrder,
   NewItem,
   SortState,
+  ThemeOption,
 } from '../types';
 import Cart from './components/Cart';
 import AddProduct from './components/AddProduct';
@@ -20,6 +21,7 @@ import {
 } from './services/product';
 import cartReducer, { CartAction } from './reducers/cartReducer';
 import catalogReducer, { CatalogAction } from './reducers/catalogReducer';
+import { ThemeContext } from './providers/ThemeProvider';
 
 export const App = () => {
   const [cart, dispatchCart] = useReducer(cartReducer, []);
@@ -27,6 +29,8 @@ export const App = () => {
   const [catalog, dispatchCatalog] = useReducer(catalogReducer, []);
 
   const [showAddProductDialog, setShowAddProductDialog] = useState(false);
+
+  const { theme, handleThemeChange } = useContext(ThemeContext);
 
   const handleAddProduct = async (newCatalogItem: NewItem) => {
     const addedItem = await addProduct(newCatalogItem);
@@ -73,6 +77,10 @@ export const App = () => {
   const toggleAddProductDialog = () => {
     setShowAddProductDialog((prev) => !prev);
   };
+  
+  const toggleTheme = () => {
+    handleThemeChange(theme === ThemeOption.Dark ? ThemeOption.Light : ThemeOption.Dark);
+  }
 
   useEffect(() => {
     console.log("useEffect ran");
@@ -90,9 +98,10 @@ export const App = () => {
   }, []);
 
   return (
-    <div id="app">
+    <div id="app" className={theme === ThemeOption.Dark ? 'darkMode' : ''}>
       <header>
         <h1>The Shop!</h1>
+        <div><button onClick={toggleTheme}>Toggle theme</button></div>
         <Cart cart={cart} onCheckout={handleCheckout} />
       </header>
       <main>
